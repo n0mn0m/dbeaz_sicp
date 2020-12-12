@@ -1,0 +1,37 @@
+#lang racket
+; Exercise 3.22
+(define (make-queue)
+  (let ((front-ptr null)
+        (rear-ptr null))
+    (define (empty?)
+      (null? front-ptr))
+    (define (front)
+      (if (empty?)
+          (error "queue empty")
+          (mcar front-ptr)))
+    (define (insert! item)
+      (let ((p (mcons item null)))
+        (cond ((empty?)
+               (set! front-ptr p)
+               (set! rear-ptr p))
+              (else
+               (set-mcdr! rear-ptr p)
+               (set! rear-ptr p)
+               )
+              )
+        )
+      )
+    (define (delete!)
+      (cond ((empty?) (error "queue empty"))
+            (else (set! front-ptr (mcdr front-ptr)))))
+           
+    (define (dispatch m)
+      (cond ((eq? m 'empty?) empty?)
+            ((eq? m 'front) front)
+            ((eq? m 'insert!) insert!)
+            ((eq? m 'delete!) delete!)
+            (else (error "Bad method"))))
+    dispatch
+    )
+  )
+

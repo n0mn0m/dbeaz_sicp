@@ -1,0 +1,4 @@
+#lang racket
+
+(define a 42)
+(set! a 13)

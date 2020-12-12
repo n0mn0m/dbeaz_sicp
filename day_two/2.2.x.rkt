@@ -1,0 +1,82 @@
+#lang racket
+
+(define (length items)
+  (define (length-iter a count)
+    (if (null? a)
+        count
+        (length-iter (cdr a) (+ 1 count))))
+    (length-iter items 0))
+
+
+; 2.18
+(define (reverse s)
+  (if (null? s)
+      '()
+      (append (reverse (cdr s)) (list (car s))))
+  )
+
+; 2.20
+;(define (same-parity a . rest)
+;  (let ((parity? (if (even? a_even? odd?)))
+;       (define (match items)
+;         (cond ((null? items) '())
+;               ((parist? (car items)) (cons (car items) (match (cdr items))))
+;               (else (match (cdr items)))))
+;       (cons a (match rest))))
+
+;Without append
+;(define (reverse s)
+  ; Iterate to the end of the list counting elements to a new list as we go
+  ; Take the last element in the list and start a new cons
+  ; Take iterate to the last element of the list in the origin list
+  ; cons the last item in the origin list
+  ; repeat
+;  (length s)
+;  (if (> unvisited 0)
+;      (cdr s)
+;  )
+
+(length '(1 4 9 16 25))
+;(reverse '(1 4 9 16 25))
+
+(define (scale-list items factor)
+  (if (null? items)
+      null
+      (cons (* (car items) factor)
+            (scale-list (cdr items) factor))))
+
+(scale-list (list 1 2 3 4 5) 10)
+
+(define (map proc items)
+  (if (null? items)
+      null
+      (cons (proc (car items))
+            (map proc (cdr items)))))
+
+(map abs (list -10 2.5 -11.6 17))
+
+(map (lambda (x) (* x x))
+     (list 1 2 3 4))
+
+(define (square x) (* x x))
+
+;(define (square-list items)
+;  (define (iter things answer)
+;    (if (null? things)
+;        answer
+;        (iter (cdr things)
+;              (cons answer
+;                    (square (car things))))))
+;  (iter items null))
+
+
+(define (square-list items)
+  (define (iter things answer)
+    (if (null? things)
+        answer
+        (iter (cdr things)
+              (cons (square (car things))
+                    answer))))
+  (iter items null))
+
+;;(square-list (list 1 2 3 4))

@@ -1,0 +1,105 @@
+#lang racket
+
+;------- Environments
+
+(define (make-environment)
+  (make-hash) ; Racket hash table
+  )
+
+(define (lookup-in-environment environment symbol)
+  (hash-ref environment symbol)
+  )
+
+(define (define-in-environment! environment symbol value)
+  (hash-set! environment symbol value)
+  )
+
+
+; Metacircular evaluator (Chapter 4.2)
+
+; 1. Primitives
+; 2. Symbols
+; 3. Combinations (tuples)
+
+(define (seval sexp environment)
+  (cond ((primitive? sexp) seval-primitive sexp environment)
+        ((symbol? sexp) seval-symbol sexp environment) ;symbol? is a built in
+        ((combination? sexp) seval-combination sexp environment)
+        (else (error "Bad expression")))
+  )
+
+(define (primitive? sexp)
+  (or (number? sexp)
+      (boolean? sexp)
+  )
+)
+
+(define (combination? sexp)
+  (list? sexp)
+)
+
+(define (seval-primitive sexp environment)
+  sexp
+)
+
+(define (seval-symbol sexp environment)
+  (lookup-in-environment environment sexp)
+)
+
+(define (seval-combination sexp environment)
+  (cond ((define? sexp) (seval-define sexp environment))
+        ((procedure? sexp) (seval-procedure sexp environment))
+         (else "Unknown Combination")
+  )
+)
+
+(define (define? sexp)
+  (eq? (car sexp) 'define)
+)
+
+(define (define-name sexp)
+  (cadr sexp)
+)
+
+(define (define-value sexp)
+  (caddr sexp)
+)
+
+(define (seval-define sexp environment)
+  (define-in-environment! environment
+    (define-name sexp)
+    (seval ((define-value sexp))))
+)
+
+(define (procedure? sexp)
+  (pair? sexp)
+)
+
+(define (procedure-proc sexp)
+  (car sexp)
+  )
+
+(define (procedure-args sexp)
+  (cdr sexp)
+  )
+
+(define (seval-procedure sexp environment)
+  (let ((proc (seval (procedure-proc sexp) environment))
+        ; Must evaluate each argument in the environment before calling the proc
+        (args (map (lambda (arg) (seval arg environment))
+                   (procedure-args sexp))))
+    ; Call the procedure
+    (apply proc args)) ; Built in feature
+)
+
+
+
+
+; ------ Try it
+(define env (make-environment))
+(seval '(define foo 42) env)
+(seval 'foo env)
+;(define-in-environment! env 'foo 42)
+;(lookup-in-environment env 'foo)
+;(seval '23 null)
+;(seval '(+ 2 3) environment)

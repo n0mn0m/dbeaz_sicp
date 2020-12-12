@@ -1,0 +1,46 @@
+#lang racket
+
+; Exercise 3.12
+
+(define (mappend! x y)
+  (set-mcdr! (last-mpair x) y))
+
+(define (last-mpair x)
+  (if (null? (mcdr x))
+      x
+      (last-mpair (mcdr x))))
+
+(define x (mcons 'a (mcons 'b null)))
+(define y (mcons 'c (mcons 'd null)))
+
+(mappend! x y)
+x     ; Look at x
+
+
+(define (count-pairs x)
+  (if (not (pair? x))
+           0
+           (+ (count-pairs (car x))
+              (count-pairs (cdr x))
+              1)))
+
+
+; Exercise 3.16
+
+(define (count-pairs x)
+  (if (not (mpair? x))
+      0
+      (+ (count-pairs (mcar x))
+         (count-pairs (mcdr x))
+         1
+         )))
+
+; Construct data structes consisting of only three pairs for which count-pairs returns
+
+; 3
+(define '3 (cons(1(cons(2(cons(3, 4)))))))
+; 4
+
+; 7
+
+; Never returns
